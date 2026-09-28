@@ -8,5 +8,6 @@
   "excludeRepositories": ["Noe-Briffa"],
   "excludeForks": true,
   "excludeArchived": true,
-  "minimumActivityScore": 1
+  "minimumActivityScore": 1,
+  "portrait": "full"
 }
