@@ -1,0 +1,15 @@
+{
+  "name": "github-self-generating-profile",
+  "version": "1.5.0",
+  "private": true,
+  "description": "Dashboard GitHub auto-genere : collecte, ranking, stack, SVG via GitHub Actions.",
+  "type": "commonjs",
+  "scripts": {
+    "collect": "node scripts/collect-github-data.js",
+    "analyze:projects": "node scripts/analyze-projects.js",
+    "analyze:stack": "node scripts/analyze-stack.js",
+    "render": "node scripts/generate-profile.js",
+    "generate": "npm run collect && npm run analyze:projects && npm run analyze:stack && npm run render",
+    "test": "node --test test/scoring.test.js test/stack.test.js test/svg.test.js"
+  }
+}

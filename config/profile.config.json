@@ -1,0 +1,12 @@
+{
+  "githubUsername": "Noe-Briffa",
+  "maxProjects": 4,
+  "activityWindowDays": 30,
+  "recentWindowDays": 7,
+  "activeDays": 14,
+  "maintainedDays": 90,
+  "excludeRepositories": ["Noe-Briffa"],
+  "excludeForks": true,
+  "excludeArchived": true,
+  "minimumActivityScore": 1
+}

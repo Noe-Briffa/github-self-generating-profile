@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="600" viewBox="0 0 800 600" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" role="img">
+  <!-- Template de reference. Le rendu reel est genere par scripts/generate-profile.js
+       depuis data/profile-data.json vers assets/profile.svg. Ne pas editer a la main. -->
+  <rect width="800" height="600" rx="12" fill="#0d1117"/>
+  <text x="40" y="60" fill="#e6edf3" font-size="26" font-weight="700">USERNAME</text>
+  <text x="40" y="82" fill="#58a6ff" font-size="12" letter-spacing="3">AI SYSTEMS · CYBERSECURITY · ENGINEERING</text>
+</svg>
