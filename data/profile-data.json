@@ -1,10 +1,10 @@
 {
-  "generatedAt": "2026-09-28T13:34:20.030Z",
+  "generatedAt": "2026-09-28T13:45:32.524Z",
   "stats": {
     "publicRepositories": 8,
     "activeRepositories": 5,
-    "commits7d": 13,
-    "commits30d": 175
+    "commits7d": 14,
+    "commits30d": 177
   },
   "projects": [
     {
@@ -12,11 +12,11 @@
       "url": "https://github.com/Noe-Briffa/github-self-generating-profile",
       "description": "",
       "status": "ACTIVE",
-      "commits7d": 4,
-      "commits30d": 4,
+      "commits7d": 6,
+      "commits30d": 6,
       "lastCommit": "2026-09-28",
       "primaryLanguage": "JavaScript",
-      "activityScore": 82,
+      "activityScore": 108,
       "stars": 0
     },
     {
@@ -36,11 +36,11 @@
       "url": "https://github.com/Noe-Briffa/token-dashboard",
       "description": "Dashboard local qui suit ta conso Codex et OpenCode : tokens, coûts et sessions, avec tarifs perso et données qui restent sur ta machine.",
       "status": "ACTIVE",
-      "commits7d": 6,
+      "commits7d": 5,
       "commits30d": 85,
       "lastCommit": "2026-09-23",
       "primaryLanguage": "JavaScript",
-      "activityScore": 335,
+      "activityScore": 325,
       "stars": 0
     },
     {
@@ -59,8 +59,8 @@
   "stack": [
     {
       "name": "JavaScript",
-      "score": 8.06,
-      "percentage": 23
+      "score": 8.4,
+      "percentage": 24
     },
     {
       "name": "Python",
@@ -75,7 +75,7 @@
     {
       "name": "HTML",
       "score": 5.14,
-      "percentage": 15
+      "percentage": 14
     },
     {
       "name": "Docker",
