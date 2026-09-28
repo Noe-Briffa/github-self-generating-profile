@@ -60,6 +60,7 @@ function portraitBlock(config) {
 
 function asciiBanner(filename, fs_, fitScale = 1, typewriter = false) {
   // Section ASCII pleine largeur, fichier pre-genere.
+  const typingSeconds = 5;
   try {
     const p = path.join(__dirname, "..", "assets", filename);
     const lines = fs.readFileSync(p, "utf8").replace(/\r/g, "").split("\n").filter((l) => l.length);
@@ -71,10 +72,10 @@ function asciiBanner(filename, fs_, fitScale = 1, typewriter = false) {
     const x = ((800 - cols * fs_ * 0.6) / 2).toFixed(1); // centre
     let s = "";
     lines.forEach((l, i) => {
-      const attrs = typewriter ? ` class="portrait typing-row" style="--type-delay:${(i * 13 / lines.length).toFixed(4)}s"` : ` class="portrait"`;
+      const attrs = typewriter ? ` class="portrait typing-row" style="--type-delay:${(i * typingSeconds / lines.length).toFixed(4)}s"` : ` class="portrait"`;
       s += `<text x="${x}" y="${(i * lh).toFixed(1)}"${attrs} font-size="${fs_.toFixed(2)}" textLength="${w}" lengthAdjust="spacingAndGlyphs">${escapeXml(l)}</text>`;
     });
-    return { svg: s, height: lines.length * lh, columns: cols, duration: 13 / lines.length };
+    return { svg: s, height: lines.length * lh, columns: cols, duration: typingSeconds / lines.length };
   } catch (_) {
     return { svg: "", height: 0 };
   }

@@ -23,7 +23,7 @@ test("render robuste vide + hostile", () => {
   assert.ok(svg.includes("assets") === false); // autonome, pas de ref externe
 });
 
-test("portrait full s'écrit ligne par ligne en 13 secondes, avec repli sans animation", () => {
+test("portrait full s'écrit ligne par ligne en 5 secondes, avec repli sans animation", () => {
   const svg = render(
     { generatedAt: "2026-09-28T04:02:00Z", stats: {}, projects: [], stack: [] },
     { githubUsername: "U", portrait: "full" },
@@ -34,7 +34,7 @@ test("portrait full s'écrit ligne par ligne en 13 secondes, avec repli sans ani
   assert.equal(delays.length, 160);
   assert.equal(delays[0], 0);
   assert.ok(delays.every((delay, index) => index === 0 || delay > delays[index - 1]));
-  assert.ok(Math.abs(delays.at(-1) + duration - 13) < 0.001);
+  assert.ok(Math.abs(delays.at(-1) + duration - 5) < 0.001);
   assert.match(svg, /steps\(320, end\)/);
   assert.match(svg, /@media \(prefers-reduced-motion: reduce\).*\.typing-row.*animation: none/);
 });
