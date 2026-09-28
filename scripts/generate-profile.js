@@ -22,13 +22,13 @@ function projectRows(projects, y0, now, maxProjects = 4) {
     const name = escapeXml(truncate(p.name || "unnamed", 30));
     const desc = escapeXml(truncate(p.description || "No description", 80));
     const meta = escapeXml(`${p.commits7d ?? 0} commits/7d · ${p.commits30d ?? 0}/30d · updated ${timeAgo(p.lastCommit, now)} · ${p.primaryLanguage || "-"} · ${p.status || ""}`);
-    const dot = p.status === "ACTIVE" ? "#3fb950" : p.status === "MAINTAINED" ? "#d29922" : "#6e7681";
+    const dotClass = p.status === "ACTIVE" ? "dot-active" : "dot-muted";
     const url = String(p.url || "");
     const safe = url.startsWith("https://") ? escapeXml(url) : "";
     const open = safe ? `<a href="${safe}" target="_blank">` : "";
     const close = safe ? `</a>` : "";
     s += `<text x="40" y="${y}" class="pnum">${num}</text>`
-      + `<circle cx="78" cy="${y - 4}" r="4" fill="${dot}"/>`
+      + `<circle cx="78" cy="${y - 4}" r="3" class="${dotClass}"/>`
       + `${open}<text x="92" y="${y}" class="pname">${name}</text>${close}`
       + `<text x="92" y="${y + 18}" class="dim">${desc}</text>`
       + `<text x="92" y="${y + 34}" class="meta">${meta}</text>`;
@@ -124,7 +124,7 @@ function stackRows(stack, projects, y0) {
   const computerVision = projects.some((project) => /image-colorization-nn|computer vision|colori[sz]ation/i.test(`${project.name} ${project.description}`));
   const languageSvg = languageLines.map((line, i) => `<text x="40" y="${y0 + i * 24}" class="stack">${i === 0 ? "Languages in public projects: " : ""}${line}</text>`).join("");
   return {
-    svg: languageSvg + (computerVision ? `<text x="40" y="${y0 + languageLines.length * 24}" class="stack">AI project: computer vision</text>` : ""),
+    svg: languageSvg + (computerVision ? `<text x="40" y="${y0 + languageLines.length * 24}" class="stack"><tspan class="ai-accent">AI / DATA</tspan> · computer vision</text>` : ""),
     height: (languageLines.length + (computerVision ? 1 : 0)) * 24,
   };
 }
@@ -174,28 +174,29 @@ function render(data, config, now = new Date()) {
     "Incident response & business continuity",
     "Cybersecurity law & regulation",
   ];
+  const mainPortrait = topSection.height > 0 ? topSection : headerPortrait;
+  const mainPortraitHeight = topSection.height > 0 ? topSection.height : Math.max(0, headerPortrait.bottom - 44);
+  const mainPortraitTranslate = topSection.height > 0 ? 196 : 152;
+  const portraitSvg = mainPortraitHeight > 0
+    ? `<text x="40" y="178" class="title">PORTRAIT</text><g transform="translate(0,${mainPortraitTranslate})" aria-hidden="true">${mainPortrait.svg}</g>`
+    : "";
+  const yLearning = mainPortraitHeight > 0 ? Math.ceil(196 + mainPortraitHeight + 34) : 180;
   const learningSvg = learning.map((item, i) => {
     const col = i < 3 ? 40 : 410;
     const row = i % 3;
-    return `<text x="${col}" y="${208 + row * 24}" class="learning">${escapeXml(item)}</text>`;
+    return `<text x="${col}" y="${yLearning + 28 + row * 24}" class="learning"><tspan class="cyber-accent">&gt;</tspan> ${escapeXml(item)}</text>`;
   }).join("");
+  const yFocus = yLearning + 118;
   const focusSvg = [
     "Infrastructure & cloud · Identity and access management · Security auditing",
     "Cyber investigation & OSINT · Risk and governance · Incident response",
-  ].map((item, i) => `<text x="40" y="${326 + i * 24}" class="focus">${escapeXml(item)}</text>`).join("");
-  const projectsY = 408;
+  ].map((item, i) => `<text x="40" y="${yFocus + 28 + i * 24}" class="focus">${escapeXml(item)}</text>`).join("");
+  const yBuild = yFocus + 92;
+  const projectsY = yBuild + 18;
   const b = projectRows(data.projects || [], projectsY, now, config.maxProjects ?? 4);
   const yStack = projectsY + b.height + 48;
   const st = stackRows(data.stack || [], data.projects || [], yStack + 28);
-  const yPortrait = yStack + 28 + st.height + 26;
-  const mainPortrait = topSection.height > 0 ? topSection : headerPortrait;
-  const mainPortraitHeight = topSection.height > 0 ? topSection.height : Math.max(0, headerPortrait.bottom - 44);
-  const mainPortraitTranslate = topSection.height > 0 ? yPortrait + 18 : yPortrait + 18 - 44;
-  const portraitSvg = mainPortraitHeight > 0
-    ? `<text x="40" y="${yPortrait}" class="title">PORTRAIT</text><g transform="translate(0,${mainPortraitTranslate})" aria-hidden="true">${mainPortrait.svg}</g>`
-    : "";
-  const portraitHeight = mainPortraitHeight > 0 ? mainPortraitHeight + 18 : 0;
-  const yBottomPortrait = yPortrait + portraitHeight + 30;
+  const yBottomPortrait = yStack + 28 + st.height + 56;
   const bottomPortraitSvg = bottomSection.height > 0
     ? `<text x="40" y="${yBottomPortrait}" class="title">PORTRAIT</text><g transform="translate(0,${yBottomPortrait + 18})" aria-hidden="true">${bottomSection.svg}</g>`
     : "";
@@ -206,12 +207,12 @@ function render(data, config, now = new Date()) {
   return `<svg xmlns="http://www.w3.org/2000/svg" width="800" height="${H}" viewBox="0 0 800 ${H}" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" role="img">
 <title>${username} - GitHub profile</title>
 <style>
-:root { --bg: #0d1117; --panel: #161b22; --text: #e6edf3; --dim: #8b949e; --line: #30363d; --accent: #58a6ff; }
+:root { --bg: #0d1117; --panel: #161b22; --text: #e6edf3; --dim: #9da7b3; --line: #273142; --cyber: #38bdf8; --ai: #a78bfa; --active: #3fb950; }
 .bg { fill: var(--bg); } .panel { fill: var(--panel); stroke: var(--line); }
 text { fill: var(--text); font-size: 14px; } .dim { fill: var(--dim); font-size: 12px; }
-.meta { fill: var(--dim); font-size: 11px; } .title { fill: var(--dim); font-size: 11px; letter-spacing: 2px; }
-.name { font-size: 26px; font-weight: 700; } .tag { fill: var(--accent); font-size: 12px; letter-spacing: 2px; }
-.pnum { fill: var(--dim); } .pname { font-weight: 700; } .stack { font-size: 13px; }
+.meta { fill: var(--dim); font-size: 11px; } .title { fill: var(--dim); font-size: 11px; letter-spacing: 2px; } .cyber-title { fill: var(--cyber); }
+.name { font-size: 26px; font-weight: 700; } .tag { font-size: 12px; letter-spacing: 2px; } .cyber-accent { fill: var(--cyber); } .ai-accent { fill: var(--ai); }
+.pnum { fill: var(--dim); } .dot-active { fill: var(--active); } .dot-muted { fill: var(--dim); } .pname { font-weight: 700; } .stack { font-size: 13px; }
 .intro { fill: var(--text); font-size: 12px; } .learning, .focus { fill: var(--text); font-size: 12px; }
 .portrait { fill: var(--dim); white-space: pre; }
 .stat { font-size: 22px; font-weight: 700; } .cursor { animation: blink 1.1s steps(1) infinite; }
@@ -223,19 +224,19 @@ ${typingCss}
 <rect class="bg" width="800" height="${H}" rx="12"/>
 <rect class="panel" x="16" y="16" width="768" height="${H - 32}" rx="8"/>
 <text x="40" y="60" class="name">${username}</text>
-<text x="40" y="82" class="tag">CYBERSECURITY · SECURITY ENGINEERING IN TRAINING · AI SYSTEMS</text>
+<text x="40" y="82" class="tag"><tspan class="cyber-accent">CYBERSECURITY</tspan><tspan> · SECURITY ENGINEERING IN TRAINING · </tspan><tspan class="ai-accent">AI SYSTEMS</tspan></text>
 <text x="40" y="112" class="intro">Computer Engineering student @ UTT, pursuing the Master SSI.</text>
 <text x="40" y="132" class="intro">Exploring security engineering and cyber investigation; building software and AI systems.</text>
 <line x1="40" y1="150" x2="760" y2="150" stroke-width="1" style="stroke: var(--line)"/>
-<text x="40" y="180" class="title">CURRENTLY LEARNING — MASTER SSI @ UTT</text>
+${portraitSvg}
+<text x="40" y="${yLearning}" class="title cyber-title">CURRENTLY LEARNING — MASTER SSI @ UTT</text>
 ${learningSvg}
-<text x="40" y="298" class="title">CYBERSECURITY FOCUS AREAS</text>
+<text x="40" y="${yFocus}" class="title cyber-title">CYBERSECURITY FOCUS AREAS</text>
 ${focusSvg}
-<text x="40" y="390" class="title">CURRENTLY BUILDING</text>
+<text x="40" y="${yBuild}" class="title">CURRENTLY BUILDING</text>
 ${b.svg}
 <text x="40" y="${yStack}" class="title">TECHNICAL TOOLBOX</text>
 ${st.svg}
-${portraitSvg}
 ${bottomPortraitSvg}
 <text x="40" y="${yAct}" class="title">ACTIVITY</text>
 <text x="40" y="${yAct + 30}" class="dim">Commits / 7d</text><text x="40" y="${yAct + 56}" class="stat">${stats.commits7d ?? 0}</text>
