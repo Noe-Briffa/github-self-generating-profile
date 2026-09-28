@@ -21,6 +21,9 @@ test("render robuste vide + hostile", () => {
   for (const bad of ["undefined", "NaN", "null>"]) assert.ok(!svg.includes(bad), `trouve: ${bad}`);
   assert.ok(svg.includes("&amp;&lt;&gt;&quot;"));
   assert.ok(svg.includes("assets") === false); // autonome, pas de ref externe
+  const headingY = Number(svg.match(/<text x="40" y="(\d+)" class="title">CURRENTLY BUILDING/)?.[1]);
+  const projectY = Number(svg.match(/<text x="40" y="(\d+)" class="pnum">01/)?.[1]);
+  assert.equal(projectY - headingY, 22);
 });
 
 test("portrait full s'écrit ligne par ligne en 5 secondes, avec repli sans animation", () => {

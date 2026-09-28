@@ -182,8 +182,9 @@ function render(data, config, now = new Date()) {
     y += 18 + topSection.height + 34;
   }
   const yBuild = Math.max(Math.ceil(y + 20), Math.ceil(portrait.bottom + 24));
-  const b = projectRows(data.projects || [], yBuild, now, config.maxProjects ?? 4);
-  const yAct = yBuild + b.height + 30;
+  const projectsY = yBuild + 8;
+  const b = projectRows(data.projects || [], projectsY, now, config.maxProjects ?? 4);
+  const yAct = projectsY + b.height + 30;
   const yStack = yAct + 110;
   const st = stackRows(data.stack || [], yStack + 30);
   let yEnd = yStack + 30 + st.height;
