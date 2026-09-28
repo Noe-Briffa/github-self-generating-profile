@@ -1,12 +1,24 @@
 {
-  "generatedAt": "2026-09-28T07:27:11.564Z",
+  "generatedAt": "2026-09-28T07:49:57.656Z",
   "stats": {
-    "publicRepositories": 6,
-    "activeRepositories": 4,
-    "commits7d": 22,
-    "commits30d": 171
+    "publicRepositories": 7,
+    "activeRepositories": 5,
+    "commits7d": 24,
+    "commits30d": 173
   },
   "projects": [
+    {
+      "name": "github-self-generating-profile",
+      "url": "https://github.com/Noe-Briffa/github-self-generating-profile",
+      "description": "",
+      "status": "ACTIVE",
+      "commits7d": 2,
+      "commits30d": 2,
+      "lastCommit": "2026-09-28",
+      "primaryLanguage": "JavaScript",
+      "activityScore": 56,
+      "stars": 0
+    },
     {
       "name": "Noe-Briffa.github.io",
       "url": "https://github.com/Noe-Briffa/Noe-Briffa.github.io",
@@ -42,35 +54,43 @@
       "primaryLanguage": "Python",
       "activityScore": 67,
       "stars": 0
-    },
-    {
-      "name": "local-rag-assistant-poc",
-      "url": "https://github.com/Noe-Briffa/local-rag-assistant-poc",
-      "description": "",
-      "status": "ACTIVE",
-      "commits7d": 0,
-      "commits30d": 5,
-      "lastCommit": "2026-09-17",
-      "primaryLanguage": "Python",
-      "activityScore": 25,
-      "stars": 0
     }
   ],
   "stack": [
     {
-      "name": "Python",
-      "score": 6.79,
-      "percentage": 39
+      "name": "JavaScript",
+      "score": 7.55,
+      "percentage": 22
     },
     {
-      "name": "JavaScript",
-      "score": 5.45,
-      "percentage": 31
+      "name": "Python",
+      "score": 6.79,
+      "percentage": 20
+    },
+    {
+      "name": "PyTorch",
+      "score": 6.79,
+      "percentage": 19
     },
     {
       "name": "HTML",
       "score": 5.14,
-      "percentage": 30
+      "percentage": 15
+    },
+    {
+      "name": "Docker",
+      "score": 2.79,
+      "percentage": 8
+    },
+    {
+      "name": "Docker Compose",
+      "score": 2.79,
+      "percentage": 8
+    },
+    {
+      "name": "FastAPI",
+      "score": 2.79,
+      "percentage": 8
     }
   ]
 }

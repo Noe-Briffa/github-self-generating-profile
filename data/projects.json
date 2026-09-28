@@ -1,6 +1,18 @@
 {
-  "analyzedAt": "2026-09-28T07:27:11.151Z",
+  "analyzedAt": "2026-09-28T07:49:57.557Z",
   "projects": [
+    {
+      "name": "github-self-generating-profile",
+      "url": "https://github.com/Noe-Briffa/github-self-generating-profile",
+      "description": "",
+      "status": "ACTIVE",
+      "commits7d": 2,
+      "commits30d": 2,
+      "lastCommit": "2026-09-28",
+      "primaryLanguage": "JavaScript",
+      "activityScore": 56,
+      "stars": 0
+    },
     {
       "name": "Noe-Briffa.github.io",
       "url": "https://github.com/Noe-Briffa/Noe-Briffa.github.io",
@@ -35,18 +47,6 @@
       "lastCommit": "2026-09-17",
       "primaryLanguage": "Python",
       "activityScore": 67,
-      "stars": 0
-    },
-    {
-      "name": "local-rag-assistant-poc",
-      "url": "https://github.com/Noe-Briffa/local-rag-assistant-poc",
-      "description": "",
-      "status": "ACTIVE",
-      "commits7d": 0,
-      "commits30d": 5,
-      "lastCommit": "2026-09-17",
-      "primaryLanguage": "Python",
-      "activityScore": 25,
       "stars": 0
     }
   ]

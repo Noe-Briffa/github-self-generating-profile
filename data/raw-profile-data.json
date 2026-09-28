@@ -1,9 +1,28 @@
 {
-  "collectedAt": "2026-09-28T07:27:09.271Z",
+  "collectedAt": "2026-09-28T07:49:54.726Z",
   "username": "Noe-Briffa",
   "mode": "live",
-  "totalPublicRepositories": 6,
+  "totalPublicRepositories": 7,
   "repos": [
+    {
+      "name": "github-self-generating-profile",
+      "html_url": "https://github.com/Noe-Briffa/github-self-generating-profile",
+      "description": null,
+      "fork": false,
+      "archived": false,
+      "stargazers_count": 0,
+      "forks_count": 0,
+      "language": "JavaScript",
+      "languages_url": "https://api.github.com/repos/Noe-Briffa/github-self-generating-profile/languages",
+      "created_at": "2026-09-28T07:37:19Z",
+      "updated_at": "2026-09-28T07:48:24Z",
+      "pushed_at": "2026-09-28T07:48:21Z",
+      "topics": [],
+      "default_branch": "main",
+      "commits7d": 2,
+      "commits30d": 2,
+      "lastCommit": "2026-09-28T07:48:17Z"
+    },
     {
       "name": "Noe-Briffa.github.io",
       "html_url": "https://github.com/Noe-Briffa/Noe-Briffa.github.io",
