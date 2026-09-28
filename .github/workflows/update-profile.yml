@@ -29,6 +29,12 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Test profile rendering
+        run: npm test
+
+      - name: Validate generated SVG XML
+        run: python3 -c "import xml.etree.ElementTree as ET; ET.parse('assets/profile.svg')"
+
       - name: Commit updated profile
         run: |
           git config user.name "github-actions[bot]"

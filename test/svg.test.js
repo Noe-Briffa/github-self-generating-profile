@@ -35,6 +35,8 @@ test("render robuste vide + hostile", () => {
   assert.ok(positions[2] > positions[1] + 50);
   assert.ok(positions[3] > positions[2] + 58);
   assert.ok(positions[4] > positions[3] + 40);
+  assert.ok(svg.includes("Infrastructure &amp; cloud"));
+  assert.ok(svg.includes("Cyber investigation &amp; OSINT"));
   assert.ok(!svg.includes("HANDS-ON"));
   assert.ok(!svg.includes("class=\"stack pct\""));
 });

@@ -179,8 +179,10 @@ function render(data, config, now = new Date()) {
     const row = i % 3;
     return `<text x="${col}" y="${208 + row * 24}" class="learning">${escapeXml(item)}</text>`;
   }).join("");
-  const focusSvg = `<text x="40" y="326" class="focus">Infrastructure & cloud · Identity and access management · Security auditing</text>`
-    + `<text x="40" y="350" class="focus">Cyber investigation & OSINT · Risk and governance · Incident response</text>`;
+  const focusSvg = [
+    "Infrastructure & cloud · Identity and access management · Security auditing",
+    "Cyber investigation & OSINT · Risk and governance · Incident response",
+  ].map((item, i) => `<text x="40" y="${326 + i * 24}" class="focus">${escapeXml(item)}</text>`).join("");
   const projectsY = 408;
   const b = projectRows(data.projects || [], projectsY, now, config.maxProjects ?? 4);
   const yStack = projectsY + b.height + 48;
