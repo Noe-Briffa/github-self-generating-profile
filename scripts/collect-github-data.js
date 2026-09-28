@@ -66,7 +66,7 @@ async function main() {
 
   if (config.githubUsername === "USERNAME") {
     if (process.env.CI) {
-      console.error("[collect] fatal: githubUsername non configure en CI — refuse fixture");
+      console.error("[collect] fatal: githubUsername non configure en CI - refuse fixture");
       process.exit(1);
     }
     const repos = fixtureRepos(now);

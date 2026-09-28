@@ -3,9 +3,9 @@ const path = require("path");
 const { log, readConfig, escapeXml, truncate, daysBetween } = require("./utils");
 
 function timeAgo(iso, now = new Date()) {
-  if (!iso) return "—";
+  if (!iso) return "-";
   const d = daysBetween(iso.length === 10 ? iso + "T00:00:00Z" : iso, now);
-  if (!Number.isFinite(d) || d < 0) return "—";
+  if (!Number.isFinite(d) || d < 0) return "-";
   if (d < 1) return "today";
   if (d < 2) return "1d ago";
   return `${Math.floor(d)}d ago`;
@@ -13,7 +13,7 @@ function timeAgo(iso, now = new Date()) {
 
 function projectRows(projects, y0, now, maxProjects = 4) {
   if (!projects.length) {
-    return { svg: `<text x="40" y="${y0}" class="dim">No active project — check back soon.</text>`, height: 30 };
+    return { svg: `<text x="40" y="${y0}" class="dim">No active project - check back soon.</text>`, height: 30 };
   }
   let y = y0;
   let s = "";
@@ -21,7 +21,7 @@ function projectRows(projects, y0, now, maxProjects = 4) {
     const num = String(i + 1).padStart(2, "0");
     const name = escapeXml(truncate(p.name || "unnamed", 30));
     const desc = escapeXml(truncate(p.description || "No description", 80));
-    const meta = escapeXml(`${p.commits7d ?? 0} commits/7d · ${p.commits30d ?? 0}/30d · updated ${timeAgo(p.lastCommit, now)} · ${p.primaryLanguage || "—"} · ${p.status || ""}`);
+    const meta = escapeXml(`${p.commits7d ?? 0} commits/7d · ${p.commits30d ?? 0}/30d · updated ${timeAgo(p.lastCommit, now)} · ${p.primaryLanguage || "-"} · ${p.status || ""}`);
     const dot = p.status === "ACTIVE" ? "#3fb950" : p.status === "MAINTAINED" ? "#d29922" : "#6e7681";
     const url = String(p.url || "");
     const safe = url.startsWith("https://") ? escapeXml(url) : "";
@@ -196,7 +196,7 @@ function render(data, config, now = new Date()) {
   const typingCss = mode === "full" && topSection.height > 0 ? `.typing-row { animation: type-line ${topSection.duration.toFixed(4)}s steps(${topSection.columns}, end) var(--type-delay) both; }` : "";
 
   return `<svg xmlns="http://www.w3.org/2000/svg" width="800" height="${H}" viewBox="0 0 800 ${H}" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" role="img">
-<title>${username} — GitHub profile</title>
+<title>${username} - GitHub profile</title>
 <style>
 :root { --bg: #0d1117; --panel: #161b22; --text: #e6edf3; --dim: #8b949e; --line: #30363d; --accent: #58a6ff; }
 .bg { fill: var(--bg); } .panel { fill: var(--panel); stroke: var(--line); }
@@ -232,7 +232,7 @@ ${b.svg}
 <text x="40" y="${yStack}" class="title">CURRENT STACK</text>
 <g class="bar-anim">${st.svg}</g>
 ${bottomSvg}
-<text x="40" y="${H - 28}" class="meta">LAST UPDATED — ${escapeXml(updated)}</text>
+<text x="40" y="${H - 28}" class="meta">LAST UPDATED - ${escapeXml(updated)}</text>
 </svg>`;
 }
 

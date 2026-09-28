@@ -22,6 +22,7 @@ function daysBetween(isoDate, now = new Date()) {
 
 function escapeXml(s) {
   return String(s ?? "")
+    .replace(/—/g, "-")
     .replace(/&/g, "&amp;")
     .replace(/</g, "&lt;")
     .replace(/>/g, "&gt;")
