@@ -1,7 +1,7 @@
 const test = require("node:test");
 const assert = require("node:assert/strict");
 const { escapeXml } = require("../scripts/utils");
-const { render } = require("../scripts/generate-profile");
+const { render, projectRows } = require("../scripts/generate-profile");
 
 function sectionY(svg, label) {
   const match = [...svg.matchAll(/<text x="40" y="(\d+)" class="title(?: [^"]*)?">([^<]*)<\/text>/g)]
@@ -11,6 +11,18 @@ function sectionY(svg, label) {
 
 test("escape XML casse pas le SVG", () => {
   assert.equal(escapeXml('a&b<c>d"e'), "a&amp;b&lt;c&gt;d&quot;e");
+});
+
+test("projects without descriptions skip the empty line and keep metadata aligned", () => {
+  const { svg, height } = projectRows([
+    { name: "undocumented", description: "", status: "ACTIVE" },
+    { name: "documented", description: "Research & development", status: "MAINTAINED" },
+  ], 200, new Date("2026-09-28T04:02:00Z"));
+  assert.equal(height, 100);
+  assert.ok(!svg.includes("No description"));
+  assert.match(svg, /<text x="92" y="218" class="meta">/);
+  assert.match(svg, /<text x="92" y="260" class="dim">Research &amp; development<\/text>/);
+  assert.match(svg, /<text x="92" y="276" class="meta">/);
 });
 
 test("render robuste vide + hostile", () => {
@@ -38,14 +50,26 @@ test("render robuste vide + hostile", () => {
   assert.ok(positions[2] > positions[1] + 50);
   assert.ok(positions[3] > positions[2] + 58);
   assert.ok(positions[4] > positions[3] + 40);
-  assert.ok(svg.includes("Infrastructure &amp; cloud"));
-  assert.ok(svg.includes("Cyber investigation &amp; OSINT"));
+  assert.equal(positions[5] - positions[4], 154);
+  assert.match(svg, /<text x="40" y="\d+" class="focus focus-label">SECURITY ENGINEERING<\/text><text x="215" y="\d+" class="focus">Infrastructure Security · Hardening · IAM<\/text>/);
+  assert.match(svg, /<text x="40" y="\d+" class="focus focus-label">INVESTIGATION<\/text><text x="215" y="\d+" class="focus">Cyber Investigation · OSINT · Incident Response<\/text>/);
+  assert.match(svg, /<text x="40" y="\d+" class="focus focus-label">GOVERNANCE<\/text><text x="215" y="\d+" class="focus">Risk · Audit · Business Continuity<\/text>/);
+  assert.match(svg, /\.focus-label \{ fill: var\(--ai\); \}/);
+  const lastFocus = Number(svg.match(/<text x="40" y="(\d+)" class="focus focus-label">GOVERNANCE<\/text>/)[1]);
+  assert.ok(positions[3] - lastFocus >= 40);
   assert.ok(svg.includes("--cyber: #38bdf8"));
   assert.ok(svg.includes("--ai: #a78bfa"));
   assert.ok(svg.includes('<tspan class="cyber-accent">CYBERSECURITY</tspan>'));
   assert.ok(svg.includes('<tspan class="ai-accent">AI SYSTEMS</tspan>'));
   assert.ok(svg.includes('<tspan class="cyber-accent">&gt;</tspan>'));
-  assert.ok(svg.includes('<tspan class="ai-accent">AI / DATA</tspan>'));
+  assert.match(svg, /<text x="40" y="\d+" class="tool-label tool-security">SECURITY<\/text>/);
+  assert.match(svg, /<text x="160" y="\d+" class="tool-value">Linux · Networking · IAM · OSINT<\/text>/);
+  assert.match(svg, /<text x="40" y="\d+" class="tool-label tool-infra">INFRA<\/text>/);
+  assert.match(svg, /<text x="40" y="\d+" class="tool-label tool-development">DEVELOPMENT<\/text>/);
+  assert.match(svg, /<text x="40" y="\d+" class="tool-label tool-ai">AI \/ DATA<\/text>/);
+  assert.ok(svg.includes("Docker · Kubernetes · Virtualization"));
+  assert.ok(svg.includes("Python · Java · JavaScript · FastAPI"));
+  assert.ok(svg.includes("PyTorch · RAG · Local LLMs · Computer Vision"));
   assert.match(svg, /<circle cx="78" cy="\d+" r="3" class="dot-muted"\/>/);
   assert.match(svg, /<circle cx="78" cy="\d+" r="3" class="dot-active"\/>/);
   assert.ok(!svg.includes("HANDS-ON"));
@@ -67,5 +91,5 @@ test("portrait full s'écrit ligne par ligne en 5 secondes, avec repli sans anim
   assert.match(svg, /steps\(320, end\)/);
   assert.match(svg, /@media \(prefers-reduced-motion: reduce\).*\.typing-row.*animation: none/);
   assert.ok(sectionY(svg, "ACTIVITY") > sectionY(svg, "PORTRAIT"));
-  assert.ok(!svg.includes("AI / DATA"));
+  assert.ok(svg.includes("AI / DATA"));
 });

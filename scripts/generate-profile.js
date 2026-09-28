@@ -20,7 +20,7 @@ function projectRows(projects, y0, now, maxProjects = 4) {
   projects.slice(0, maxProjects).forEach((p, i) => {
     const num = String(i + 1).padStart(2, "0");
     const name = escapeXml(truncate(p.name || "unnamed", 30));
-    const desc = escapeXml(truncate(p.description || "No description", 80));
+    const desc = escapeXml(truncate(p.description || "", 80));
     const meta = escapeXml(`${p.commits7d ?? 0} commits/7d · ${p.commits30d ?? 0}/30d · updated ${timeAgo(p.lastCommit, now)} · ${p.primaryLanguage || "-"} · ${p.status || ""}`);
     const dotClass = p.status === "ACTIVE" ? "dot-active" : "dot-muted";
     const url = String(p.url || "");
@@ -30,9 +30,9 @@ function projectRows(projects, y0, now, maxProjects = 4) {
     s += `<text x="40" y="${y}" class="pnum">${num}</text>`
       + `<circle cx="78" cy="${y - 4}" r="3" class="${dotClass}"/>`
       + `${open}<text x="92" y="${y}" class="pname">${name}</text>${close}`
-      + `<text x="92" y="${y + 18}" class="dim">${desc}</text>`
-      + `<text x="92" y="${y + 34}" class="meta">${meta}</text>`;
-    y += 58;
+      + (desc ? `<text x="92" y="${y + 18}" class="dim">${desc}</text>` : "")
+      + `<text x="92" y="${y + (desc ? 34 : 18)}" class="meta">${meta}</text>`;
+    y += desc ? 58 : 42;
   });
   return { svg: s, height: y - y0 };
 }
@@ -116,16 +116,16 @@ function pixelsBlock(filename = "portrait-pixels.png") {
   }
 }
 
-function stackRows(stack, projects, y0) {
-  const languages = stack.slice(0, 6).map((tech) => escapeXml(truncate(tech.name || "?", 12)));
-  const languageLines = [];
-  for (let i = 0; i < languages.length; i += 3) languageLines.push(languages.slice(i, i + 3).join(" · "));
-  if (!languageLines.length) languageLines.push("No languages detected");
-  const computerVision = projects.some((project) => /image-colorization-nn|computer vision|colori[sz]ation/i.test(`${project.name} ${project.description}`));
-  const languageSvg = languageLines.map((line, i) => `<text x="40" y="${y0 + i * 24}" class="stack">${i === 0 ? "Languages in public projects: " : ""}${line}</text>`).join("");
+function stackRows(y0) {
+  const rows = [
+    ["SECURITY", "Linux · Networking · IAM · OSINT", "tool-security"],
+    ["INFRA", "Docker · Kubernetes · Virtualization", "tool-infra"],
+    ["DEVELOPMENT", "Python · Java · JavaScript · FastAPI", "tool-development"],
+    ["AI / DATA", "PyTorch · RAG · Local LLMs · Computer Vision", "tool-ai"],
+  ];
   return {
-    svg: languageSvg + (computerVision ? `<text x="40" y="${y0 + languageLines.length * 24}" class="stack"><tspan class="ai-accent">AI / DATA</tspan> · computer vision</text>` : ""),
-    height: (languageLines.length + (computerVision ? 1 : 0)) * 24,
+    svg: rows.map(([label, value, color], i) => `<text x="40" y="${y0 + i * 24}" class="tool-label ${color}">${label}</text><text x="160" y="${y0 + i * 24}" class="tool-value">${escapeXml(value)}</text>`).join(""),
+    height: rows.length * 24,
   };
 }
 
@@ -187,33 +187,36 @@ function render(data, config, now = new Date()) {
     return `<text x="${col}" y="${yLearning + 28 + row * 24}" class="learning"><tspan class="cyber-accent">&gt;</tspan> ${escapeXml(item)}</text>`;
   }).join("");
   const yFocus = yLearning + 118;
-  const focusSvg = [
-    "Infrastructure & cloud · Identity and access management · Security auditing",
-    "Cyber investigation & OSINT · Risk and governance · Incident response",
-  ].map((item, i) => `<text x="40" y="${yFocus + 28 + i * 24}" class="focus">${escapeXml(item)}</text>`).join("");
-  const yBuild = yFocus + 92;
-  const projectsY = yBuild + 18;
+  const focusGroups = [
+    ["SECURITY ENGINEERING", "Infrastructure Security · Hardening · IAM"],
+    ["INVESTIGATION", "Cyber Investigation · OSINT · Incident Response"],
+    ["GOVERNANCE", "Risk · Audit · Business Continuity"],
+  ];
+  const focusSvg = focusGroups.map(([label, value], i) => `<text x="40" y="${yFocus + 28 + i * 24}" class="focus focus-label">${label}</text><text x="215" y="${yFocus + 28 + i * 24}" class="focus">${escapeXml(value)}</text>`).join("");
+  const yBuild = yFocus + 116;
+  const projectsY = yBuild + 30;
   const b = projectRows(data.projects || [], projectsY, now, config.maxProjects ?? 4);
   const yStack = projectsY + b.height + 48;
-  const st = stackRows(data.stack || [], data.projects || [], yStack + 28);
-  const yBottomPortrait = yStack + 28 + st.height + 56;
+  const st = stackRows(yStack + 28);
+  const yBottomPortrait = yStack + 28 + st.height + 30;
   const bottomPortraitSvg = bottomSection.height > 0
     ? `<text x="40" y="${yBottomPortrait}" class="title">PORTRAIT</text><g transform="translate(0,${yBottomPortrait + 18})" aria-hidden="true">${bottomSection.svg}</g>`
     : "";
-  const yAct = yBottomPortrait + (bottomSection.height > 0 ? 18 + bottomSection.height : 0) + 30;
+  const yAct = yBottomPortrait + (bottomSection.height > 0 ? 18 + bottomSection.height + 30 : 0);
   const H = Math.ceil(yAct + 120);
   const typingCss = mode === "full" && topSection.height > 0 ? `.typing-row { animation: type-line ${topSection.duration.toFixed(4)}s steps(${topSection.columns}, end) var(--type-delay) both; }` : "";
 
   return `<svg xmlns="http://www.w3.org/2000/svg" width="800" height="${H}" viewBox="0 0 800 ${H}" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" role="img">
 <title>${username} - GitHub profile</title>
 <style>
-:root { --bg: #0d1117; --panel: #161b22; --text: #e6edf3; --dim: #9da7b3; --line: #273142; --cyber: #38bdf8; --ai: #a78bfa; --active: #3fb950; }
+:root { --bg: #0d1117; --panel: #161b22; --text: #e6edf3; --dim: #9da7b3; --line: #273142; --cyber: #38bdf8; --infra: #86aebb; --ai: #a78bfa; --active: #3fb950; }
 .bg { fill: var(--bg); } .panel { fill: var(--panel); stroke: var(--line); }
 text { fill: var(--text); font-size: 14px; } .dim { fill: var(--dim); font-size: 12px; }
 .meta { fill: var(--dim); font-size: 11px; } .title { fill: var(--dim); font-size: 11px; letter-spacing: 2px; } .cyber-title { fill: var(--cyber); }
-.name { font-size: 26px; font-weight: 700; } .tag { font-size: 12px; letter-spacing: 2px; } .cyber-accent { fill: var(--cyber); } .ai-accent { fill: var(--ai); }
-.pnum { fill: var(--dim); } .dot-active { fill: var(--active); } .dot-muted { fill: var(--dim); } .pname { font-weight: 700; } .stack { font-size: 13px; }
-.intro { fill: var(--text); font-size: 12px; } .learning, .focus { fill: var(--text); font-size: 12px; }
+.name { font-size: 26px; font-weight: 700; } .tag { font-size: 12px; letter-spacing: 2px; } .cyber-accent, .tool-security { fill: var(--cyber); } .ai-accent, .tool-ai { fill: var(--ai); }
+.tool-label { font-size: 12px; font-weight: 700; letter-spacing: .3px; } .tool-infra { fill: var(--infra); } .tool-development { fill: var(--text); } .tool-value { font-size: 13px; }
+.pnum { fill: var(--dim); } .dot-active { fill: var(--active); } .dot-muted { fill: var(--dim); } .pname { font-weight: 700; }
+.intro { fill: var(--text); font-size: 12px; } .learning, .focus { fill: var(--text); font-size: 12px; } .focus-label { fill: var(--ai); }
 .portrait { fill: var(--dim); white-space: pre; }
 .stat { font-size: 22px; font-weight: 700; } .cursor { animation: blink 1.1s steps(1) infinite; }
 @keyframes blink { 50% { opacity: 0; } }
