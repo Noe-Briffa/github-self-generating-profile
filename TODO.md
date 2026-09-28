@@ -61,7 +61,7 @@ Principe : cocher au fur et à mesure. Ne cocher que si vérifié.
 - [x] Créer `.github/workflows/update-profile.yml` (`workflow_dispatch`, `schedule cron "0 4 * * *"`)
 - [x] Steps : checkout@v4 → setup-node@v4 Node 22 → `npm ci` → `npm run generate` avec `GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}` → `git add assets/profile.svg data/profile-data.json` → commit si diff → push
 - [x] `permissions: contents: write`, `user.name github-actions[bot]`, `user.email 41898282+github-actions[bot]@users.noreply.github.com`, commit `git diff --cached --quiet || git commit -m "chore: update GitHub profile"` (§22)
-- [ ] Tester `workflow_dispatch` avant cron (bloqué : attend push repo + user)
+- [x] Tester `workflow_dispatch` avant cron (run 36429527959 : succès, commit automatique vérifié)
 - [x] README minimal `<p align="center"><img src="./assets/profile.svg" width="100%" /></p>` + liens Portfolio/LinkedIn/Email, sans duplication SVG
 
 ## Phase 6 — Polish
