@@ -42,7 +42,7 @@ test("render robuste vide + hostile", () => {
   for (const bad of ["undefined", "NaN", "null>"]) assert.ok(!svg.includes(bad), `trouve: ${bad}`);
   assert.ok(svg.includes("&amp;&lt;&gt;&quot;"));
   assert.ok(svg.includes("assets") === false); // autonome, pas de ref externe
-  const sections = ["PORTRAIT", "CURRENTLY LEARNING — MASTER SSI @ UTT", "CYBERSECURITY FOCUS AREAS", "CURRENTLY BUILDING", "TECHNICAL TOOLBOX", "ACTIVITY"];
+  const sections = ["NOÉ BRIFFA", "CURRENTLY LEARNING — MASTER SSI @ UTT", "CYBERSECURITY FOCUS AREAS", "CURRENTLY BUILDING", "TECHNICAL TOOLBOX", "ACTIVITY"];
   const positions = sections.map((section) => sectionY(svg, section));
   assert.ok(positions.every((position) => position >= 0));
   assert.deepEqual(positions, [...positions].sort((a, b) => a - b));
@@ -90,6 +90,6 @@ test("portrait full s'écrit ligne par ligne en 5 secondes, avec repli sans anim
   assert.ok(Math.abs(delays.at(-1) + duration - 5) < 0.001);
   assert.match(svg, /steps\(320, end\)/);
   assert.match(svg, /@media \(prefers-reduced-motion: reduce\).*\.typing-row.*animation: none/);
-  assert.ok(sectionY(svg, "ACTIVITY") > sectionY(svg, "PORTRAIT"));
+  assert.ok(sectionY(svg, "ACTIVITY") > sectionY(svg, "NOÉ BRIFFA"));
   assert.ok(svg.includes("AI / DATA"));
 });

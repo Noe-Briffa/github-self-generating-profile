@@ -178,7 +178,7 @@ function render(data, config, now = new Date()) {
   const mainPortraitHeight = topSection.height > 0 ? topSection.height : Math.max(0, headerPortrait.bottom - 44);
   const mainPortraitTranslate = topSection.height > 0 ? 196 : 152;
   const portraitSvg = mainPortraitHeight > 0
-    ? `<text x="40" y="178" class="title">PORTRAIT</text><g transform="translate(0,${mainPortraitTranslate})" aria-hidden="true">${mainPortrait.svg}</g>`
+    ? `<text x="40" y="178" class="title">NOÉ BRIFFA</text><g transform="translate(0,${mainPortraitTranslate})" aria-hidden="true">${mainPortrait.svg}</g>`
     : "";
   const yLearning = mainPortraitHeight > 0 ? Math.ceil(196 + mainPortraitHeight + 34) : 180;
   const learningSvg = learning.map((item, i) => {
