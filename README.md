@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="./assets/profile.svg" alt="Profil GitHub de Noe-Briffa : projets, activité, technologies et portrait ASCII" width="100%" />
+  <img src="./assets/profile.svg" alt="Noe Briffa: Computer Engineering student at UTT, pursuing the Master SSI, cybersecurity focus, software and AI projects, GitHub activity" width="100%" />
 </p>
 
 <p align="center">

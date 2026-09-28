@@ -3,6 +3,12 @@ const assert = require("node:assert/strict");
 const { escapeXml } = require("../scripts/utils");
 const { render } = require("../scripts/generate-profile");
 
+function sectionY(svg, label) {
+  const match = [...svg.matchAll(/<text x="40" y="(\d+)" class="title">([^<]*)<\/text>/g)]
+    .find(([, , text]) => text === label);
+  return match ? Number(match[1]) : -1;
+}
+
 test("escape XML casse pas le SVG", () => {
   assert.equal(escapeXml('a&b<c>d"e'), "a&amp;b&lt;c&gt;d&quot;e");
 });
@@ -21,9 +27,16 @@ test("render robuste vide + hostile", () => {
   for (const bad of ["undefined", "NaN", "null>"]) assert.ok(!svg.includes(bad), `trouve: ${bad}`);
   assert.ok(svg.includes("&amp;&lt;&gt;&quot;"));
   assert.ok(svg.includes("assets") === false); // autonome, pas de ref externe
-  const headingY = Number(svg.match(/<text x="40" y="(\d+)" class="title">CURRENTLY BUILDING/)?.[1]);
-  const projectY = Number(svg.match(/<text x="40" y="(\d+)" class="pnum">01/)?.[1]);
-  assert.equal(projectY - headingY, 22);
+  const sections = ["CURRENTLY LEARNING — MASTER SSI @ UTT", "CYBERSECURITY FOCUS AREAS", "CURRENTLY BUILDING", "TECHNICAL TOOLBOX", "ACTIVITY"];
+  const positions = sections.map((section) => sectionY(svg, section));
+  assert.ok(positions.every((position) => position >= 0));
+  assert.deepEqual(positions, [...positions].sort((a, b) => a - b));
+  assert.ok(positions[1] > positions[0] + 80);
+  assert.ok(positions[2] > positions[1] + 50);
+  assert.ok(positions[3] > positions[2] + 58);
+  assert.ok(positions[4] > positions[3] + 40);
+  assert.ok(!svg.includes("HANDS-ON"));
+  assert.ok(!svg.includes("class=\"stack pct\""));
 });
 
 test("portrait full s'écrit ligne par ligne en 5 secondes, avec repli sans animation", () => {
@@ -40,4 +53,5 @@ test("portrait full s'écrit ligne par ligne en 5 secondes, avec repli sans anim
   assert.ok(Math.abs(delays.at(-1) + duration - 5) < 0.001);
   assert.match(svg, /steps\(320, end\)/);
   assert.match(svg, /@media \(prefers-reduced-motion: reduce\).*\.typing-row.*animation: none/);
+  assert.ok(sectionY(svg, "ACTIVITY") > sectionY(svg, "PORTRAIT"));
 });

@@ -28,7 +28,7 @@ function projectRows(projects, y0, now, maxProjects = 4) {
     const open = safe ? `<a href="${safe}" target="_blank">` : "";
     const close = safe ? `</a>` : "";
     s += `<text x="40" y="${y}" class="pnum">${num}</text>`
-      + `<circle cx="78" cy="${y - 4}" r="4" fill="${dot}"><animate attributeName="opacity" values="1;0.4;1" dur="2s" repeatCount="indefinite"/></circle>`
+      + `<circle cx="78" cy="${y - 4}" r="4" fill="${dot}"/>`
       + `${open}<text x="92" y="${y}" class="pname">${name}</text>${close}`
       + `<text x="92" y="${y + 18}" class="dim">${desc}</text>`
       + `<text x="92" y="${y + 34}" class="meta">${meta}</text>`;
@@ -116,24 +116,17 @@ function pixelsBlock(filename = "portrait-pixels.png") {
   }
 }
 
-function stackRows(stack, y0) {
-  if (!stack.length) {
-    return { svg: `<text x="40" y="${y0}" class="dim">No technology detected yet.</text>`, height: 30 };
-  }
-  const TRACK = 260;
-  let y = y0;
-  let s = "";
-  for (const t of stack.slice(0, 8)) {
-    const name = escapeXml(truncate(t.name || "?", 16));
-    const pct = Math.max(0, Math.min(100, t.percentage || 0));
-    const w = (pct / 100) * TRACK;
-    s += `<text x="40" y="${y}" class="stack">${name}</text>`
-      + `<rect x="190" y="${y - 11}" width="${TRACK}" height="11" rx="3" class="track"/>`
-      + `<rect x="190" y="${y - 11}" width="${w.toFixed(1)}" height="11" rx="3" class="fill bar-anim"/>`
-      + `<text x="${200 + TRACK}" y="${y}" class="stack pct">${pct}%</text>`;
-    y += 26;
-  }
-  return { svg: s, height: y - y0 };
+function stackRows(stack, projects, y0) {
+  const languages = stack.slice(0, 6).map((tech) => escapeXml(truncate(tech.name || "?", 12)));
+  const languageLines = [];
+  for (let i = 0; i < languages.length; i += 3) languageLines.push(languages.slice(i, i + 3).join(" · "));
+  if (!languageLines.length) languageLines.push("No languages detected");
+  const computerVision = projects.some((project) => /image-colorization-nn|computer vision|colori[sz]ation/i.test(`${project.name} ${project.description}`));
+  const languageSvg = languageLines.map((line, i) => `<text x="40" y="${y0 + i * 24}" class="stack">${i === 0 ? "Languages in public projects: " : ""}${line}</text>`).join("");
+  return {
+    svg: languageSvg + (computerVision ? `<text x="40" y="${y0 + languageLines.length * 24}" class="stack">AI project: computer vision</text>` : ""),
+    height: (languageLines.length + (computerVision ? 1 : 0)) * 24,
+  };
 }
 
 function render(data, config, now = new Date()) {
@@ -173,27 +166,39 @@ function render(data, config, now = new Date()) {
     bottomSection = asciiBanner("portrait-wide.txt", 10, 1);
   }
   if (mode === "full" && !topSection.height) throw new Error("Missing portrait source: assets/portrait-full.txt");
-  const portrait = headerPortrait;
-
-  let y = 150; // sous divider SYSTEM STATUS
-  let topSvg = "";
-  if (topSection.height > 0) {
-    topSvg = `<text x="40" y="${y}" class="title">PORTRAIT</text><g transform="translate(0,${y + 18})" aria-hidden="true">${topSection.svg}</g>`;
-    y += 18 + topSection.height + 34;
-  }
-  const yBuild = Math.max(Math.ceil(y + 20), Math.ceil(portrait.bottom + 24));
-  const projectsY = yBuild + 8;
+  const learning = [
+    "Security governance & risk",
+    "Systems hardening",
+    "Network & modern architecture security",
+    "Cyber investigation & OSINT",
+    "Incident response & business continuity",
+    "Cybersecurity law & regulation",
+  ];
+  const learningSvg = learning.map((item, i) => {
+    const col = i < 3 ? 40 : 410;
+    const row = i % 3;
+    return `<text x="${col}" y="${208 + row * 24}" class="learning">${escapeXml(item)}</text>`;
+  }).join("");
+  const focusSvg = `<text x="40" y="326" class="focus">Infrastructure & cloud · Identity and access management · Security auditing</text>`
+    + `<text x="40" y="350" class="focus">Cyber investigation & OSINT · Risk and governance · Incident response</text>`;
+  const projectsY = 408;
   const b = projectRows(data.projects || [], projectsY, now, config.maxProjects ?? 4);
-  const yAct = projectsY + b.height + 30;
-  const yStack = yAct + 110;
-  const st = stackRows(data.stack || [], yStack + 30);
-  let yEnd = yStack + 30 + st.height;
-  let bottomSvg = "";
-  if (bottomSection.height > 0) {
-    bottomSvg = `<text x="40" y="${Math.ceil(yEnd + 30)}" class="title">PORTRAIT</text><g transform="translate(0,${Math.ceil(yEnd + 48)})">${bottomSection.svg}</g>`;
-    yEnd += 48 + bottomSection.height;
-  }
-  const H = Math.ceil(yEnd + 60);
+  const yStack = projectsY + b.height + 48;
+  const st = stackRows(data.stack || [], data.projects || [], yStack + 28);
+  const yPortrait = yStack + 28 + st.height + 26;
+  const mainPortrait = topSection.height > 0 ? topSection : headerPortrait;
+  const mainPortraitHeight = topSection.height > 0 ? topSection.height : Math.max(0, headerPortrait.bottom - 44);
+  const mainPortraitTranslate = topSection.height > 0 ? yPortrait + 18 : yPortrait + 18 - 44;
+  const portraitSvg = mainPortraitHeight > 0
+    ? `<text x="40" y="${yPortrait}" class="title">PORTRAIT</text><g transform="translate(0,${mainPortraitTranslate})" aria-hidden="true">${mainPortrait.svg}</g>`
+    : "";
+  const portraitHeight = mainPortraitHeight > 0 ? mainPortraitHeight + 18 : 0;
+  const yBottomPortrait = yPortrait + portraitHeight + 30;
+  const bottomPortraitSvg = bottomSection.height > 0
+    ? `<text x="40" y="${yBottomPortrait}" class="title">PORTRAIT</text><g transform="translate(0,${yBottomPortrait + 18})" aria-hidden="true">${bottomSection.svg}</g>`
+    : "";
+  const yAct = yBottomPortrait + (bottomSection.height > 0 ? 18 + bottomSection.height : 0) + 30;
+  const H = Math.ceil(yAct + 120);
   const typingCss = mode === "full" && topSection.height > 0 ? `.typing-row { animation: type-line ${topSection.duration.toFixed(4)}s steps(${topSection.columns}, end) var(--type-delay) both; }` : "";
 
   return `<svg xmlns="http://www.w3.org/2000/svg" width="800" height="${H}" viewBox="0 0 800 ${H}" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" role="img">
@@ -203,36 +208,38 @@ function render(data, config, now = new Date()) {
 .bg { fill: var(--bg); } .panel { fill: var(--panel); stroke: var(--line); }
 text { fill: var(--text); font-size: 14px; } .dim { fill: var(--dim); font-size: 12px; }
 .meta { fill: var(--dim); font-size: 11px; } .title { fill: var(--dim); font-size: 11px; letter-spacing: 2px; }
-.name { font-size: 26px; font-weight: 700; } .tag { fill: var(--accent); font-size: 12px; letter-spacing: 3px; }
+.name { font-size: 26px; font-weight: 700; } .tag { fill: var(--accent); font-size: 12px; letter-spacing: 2px; }
 .pnum { fill: var(--dim); } .pname { font-weight: 700; } .stack { font-size: 13px; }
-.track { fill: var(--line); opacity: 0.45; } .fill { fill: var(--accent); } .pct { fill: var(--dim); }
+.intro { fill: var(--text); font-size: 12px; } .learning, .focus { fill: var(--text); font-size: 12px; }
 .portrait { fill: var(--dim); white-space: pre; }
 .stat { font-size: 22px; font-weight: 700; } .cursor { animation: blink 1.1s steps(1) infinite; }
 @keyframes blink { 50% { opacity: 0; } }
-.bar-anim { animation: grow 0.8s ease-out; transform-origin: left; }
-@keyframes grow { from { transform: scaleX(0); } to { transform: scaleX(1); } }
 ${typingCss}
 @keyframes type-line { from { clip-path: inset(0 100% 0 0); } to { clip-path: inset(0 0 0 0); } }
-@media (prefers-reduced-motion: reduce) { .typing-row, .cursor, .bar-anim { animation: none; } }
+@media (prefers-reduced-motion: reduce) { .typing-row, .cursor { animation: none; } }
 </style>
 <rect class="bg" width="800" height="${H}" rx="12"/>
 <rect class="panel" x="16" y="16" width="768" height="${H - 32}" rx="8"/>
 <text x="40" y="60" class="name">${username}</text>
-<text x="40" y="82" class="tag">AI SYSTEMS · CYBERSECURITY · ENGINEERING</text>
-<text x="40" y="112" class="title">SYSTEM STATUS <tspan class="cursor">▊</tspan></text>
-<line x1="40" y1="122" x2="760" y2="122" stroke-width="1" style="stroke: var(--line)"/>
-${portrait.svg}
-${topSvg}
-<text x="40" y="${yBuild - 14}" class="title">CURRENTLY BUILDING</text>
+<text x="40" y="82" class="tag">CYBERSECURITY · SECURITY ENGINEERING IN TRAINING · AI SYSTEMS</text>
+<text x="40" y="112" class="intro">Computer Engineering student @ UTT, pursuing the Master SSI.</text>
+<text x="40" y="132" class="intro">Exploring security engineering and cyber investigation; building software and AI systems.</text>
+<line x1="40" y1="150" x2="760" y2="150" stroke-width="1" style="stroke: var(--line)"/>
+<text x="40" y="180" class="title">CURRENTLY LEARNING — MASTER SSI @ UTT</text>
+${learningSvg}
+<text x="40" y="298" class="title">CYBERSECURITY FOCUS AREAS</text>
+${focusSvg}
+<text x="40" y="390" class="title">CURRENTLY BUILDING</text>
 ${b.svg}
+<text x="40" y="${yStack}" class="title">TECHNICAL TOOLBOX</text>
+${st.svg}
+${portraitSvg}
+${bottomPortraitSvg}
 <text x="40" y="${yAct}" class="title">ACTIVITY</text>
 <text x="40" y="${yAct + 30}" class="dim">Commits / 7d</text><text x="40" y="${yAct + 56}" class="stat">${stats.commits7d ?? 0}</text>
 <text x="240" y="${yAct + 30}" class="dim">Commits / 30d</text><text x="240" y="${yAct + 56}" class="stat">${stats.commits30d ?? 0}</text>
 <text x="440" y="${yAct + 30}" class="dim">Active repos</text><text x="440" y="${yAct + 56}" class="stat">${stats.activeRepositories ?? 0}</text>
 <text x="620" y="${yAct + 30}" class="dim">Public repos</text><text x="620" y="${yAct + 56}" class="stat">${stats.publicRepositories ?? 0}</text>
-<text x="40" y="${yStack}" class="title">CURRENT STACK</text>
-<g class="bar-anim">${st.svg}</g>
-${bottomSvg}
 <text x="40" y="${H - 28}" class="meta">LAST UPDATED - ${escapeXml(updated)}</text>
 </svg>`;
 }
